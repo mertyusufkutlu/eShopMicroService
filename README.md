@@ -1,2 +1,2 @@
 # eShopMicroService
-In this project, I am working on microservices architecture with .NET core 6
+In this project, I am working on microservices architecture with .NET Core 6
