@@ -6,4 +6,9 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\EventBus.RabbitMQ\EventBus.RabbitMQ.csproj" />
+      <ProjectReference Include="..\EvetBus.AzureServiceBus\EvetBus.AzureServiceBus.csproj" />
+    </ItemGroup>
+
 </Project>

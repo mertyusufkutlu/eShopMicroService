@@ -10,23 +10,22 @@ namespace EvetBus.AzureServiceBus;
 
 public class EventBusServiceBus : BaseEventBus
 {
-    private ITopicClient _topicClient;
+    private ITopicClient topicClient;
     private ManagementClient _managementClient;
     private readonly ILogger _logger;
 
-    public EventBusServiceBus(IServiceProvider serviceProvider, EventBusConfig config, ITopicClient topicClient,
-        ManagementClient managementClient, ILogger logger) : base(serviceProvider, config)
+    public EventBusServiceBus(EventBusConfig config, IServiceProvider serviceProvider) : base(config, serviceProvider)
     {
         _logger = (serviceProvider.GetService(typeof(ILogger<EventBusServiceBus>)) as ILogger<EventBusServiceBus>)!;
         _managementClient = new ManagementClient(config.EventBusConnectionString);
-        _topicClient = CreateTopicClient();
+        topicClient = CreateTopicClient();
     }
 
     private ITopicClient CreateTopicClient()
     {
-        if (_topicClient == null || _topicClient.IsClosedOrClosing)
+        if (topicClient == null || topicClient.IsClosedOrClosing)
         {
-            _topicClient = new TopicClient(EventBusConfig.EventBusConnectionString, EventBusConfig.DefaultTopicName,
+            topicClient = new TopicClient(EventBusConfig.EventBusConnectionString, EventBusConfig.DefaultTopicName,
                 RetryPolicy.Default);
         }
 
@@ -34,7 +33,7 @@ public class EventBusServiceBus : BaseEventBus
         if (!_managementClient.TopicExistsAsync(EventBusConfig.DefaultTopicName).GetAwaiter().GetResult())
             _managementClient.CreateTopicAsync(EventBusConfig.DefaultTopicName).GetAwaiter().GetResult();
 
-        return _topicClient;
+        return topicClient;
     }
 
     public override void Publish(IntegrationEvent @event)
@@ -52,7 +51,7 @@ public class EventBusServiceBus : BaseEventBus
             Body = bodyArray,
             Label = eventName
         };
-        _topicClient.SendAsync(message).GetAwaiter().GetResult();
+        topicClient.SendAsync(message).GetAwaiter().GetResult();
         ;
     }
 
@@ -183,9 +182,9 @@ public class EventBusServiceBus : BaseEventBus
     public override void Dispose()
     {
         base.Dispose();
-        _topicClient.CloseAsync().GetAwaiter().GetResult();
+        topicClient.CloseAsync().GetAwaiter().GetResult();
         _managementClient.CloseAsync().GetAwaiter().GetResult();
-        _topicClient = null;
+        topicClient = null;
         _managementClient = null;
     }
 }

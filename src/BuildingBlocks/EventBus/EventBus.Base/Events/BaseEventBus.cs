@@ -12,7 +12,7 @@ public abstract class BaseEventBus : IEventBus
     public readonly IEventBusSubscriptionManager SubsManager;
     public EventBusConfig EventBusConfig { get; set; }
 
-    protected BaseEventBus(IServiceProvider serviceProvider, EventBusConfig config)
+    protected BaseEventBus(EventBusConfig config, IServiceProvider serviceProvider)
     {
         EventBusConfig = config;
         ServiceProvider = serviceProvider;
